@@ -7,6 +7,34 @@ class Aluno extends aAluno{
     private Avaliacao[] notas;
     private int limite=0;
 
+    public Aluno(){
+        this("<SemNome>", DEFAULT_LENGTH);
+    }
+
+    public Aluno(String nome){
+        this(nome, DEFAULT_LENGTH);
+    }
+
+    public Aluno(int qtasAvaliacoes){
+        this("<SemNome>", qtasAvaliacoes);
+    }
+
+    public Aluno(String nome, int qtasAvaliacoes) {
+        this.setNome(nome);
+    
+        if (qtasAvaliacoes < DEFAULT_LENGTH) {
+            qtasAvaliacoes = DEFAULT_LENGTH;
+        }
+    
+        this.notas = new Avaliacao[qtasAvaliacoes];
+        
+        for (int i = 0; i < qtasAvaliacoes; i++) {
+            this.notas[i] = new Avaliacao();
+        }
+    
+        this.limite = 0;
+    }
+    
     public void setNome(String n){
         this.Nome= n;
     };
@@ -53,46 +81,80 @@ class Aluno extends aAluno{
         return this.notas;
     };
 
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        
+        for (int i = 0; i < this.limite; i++) {
+            result.append(notas[i].toString()).append("\n");
+        }
+        
+        return result.toString();
+    }
+
     public void inserirAvaliacao(Avaliacao a) throws Exception{
         if (a==null){
             throw new Exception ("Avaliação inválida");
         }
-        if (this.notas.length==DEFAULT_LENGTH){
+        if (this.limite==DEFAULT_LENGTH){
             throw new Exception("As notas já estão fechadas para o cálculo de média");
         }
+        int onde= 0;
 
-        notas[limite]= a;
-        limite++;
+        if(onde<this.limite){
+            if (notas[onde].equals(a)){
+                throw new Exception("Avaliação já registrada");
+            }
+        }
+
+        for (int i = this.limite; i > onde; i--) {
+            notas[i] = notas[i - 1];
+        }
+
+        notas[0]= a;
+        this.limite++;
     };
     
     public void removerAvaliacao(Avaliacao a) throws Exception{
          if (a==null){
             throw new Exception ("Avaliação inválida");
         }
-        if (this.notas == null || this.notas.length == 0) {
+        if (this.limite == 0) {
             throw new Exception("O Aluno não possui mais avaliações para serem excluídas");
         }
+        int onde= 0;
+        if (onde==this.limite){
+            throw new Exception("Avaliação não encontrado");
+        }
 
-        boolean encontrada= false;
-        for(int i=0; i<this.notas.length; i++){
-            if(this.notas[i].equals(a)){
-                encontrada= true;
-                break;
-            }
+        while(onde<this.limite-1){
+            notas[onde]= notas[onde+1];
+            onde++;
         }
-        if(!encontrada){
-            throw new Exception("Avaliação não encontrada para remoção")
-        }
+
+        this.limite--;
 
     };
 
     public void ordenarAvaliacoesPorNome(){
         if (this.notas != null) {
-            Arrays.sort(this.notas, (a1, a2) -> a1.getNome().compareTo(a2.getNome()));
+            Arrays.sort(this.notas, 0, this.limite, (a1, a2) -> a1.getNome().compareTo(a2.getNome()));
         }
     };
 
-    public double media(){
 
+
+    public double media(){
+        if(this.limite==0){
+            return 0.0;
+        }
+
+        double soma= 0.0;
+        int somaPeso=0;
+        for (int i=0; i<this.limite; i++){
+            soma += ((this.notas[i].getNota())*(this.notas[i].getPeso()));
+            somaPeso += this.notas[i].getPeso();
+        }
+
+        return soma/somaPeso;
     };
 }

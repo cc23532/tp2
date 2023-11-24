@@ -81,8 +81,8 @@ class Avaliacao extends Object implements Cloneable{
     }
 
     public String toString(){
-        return "Avaliação: "+ this.nome+ 
-                "\n Nota: "+ this.nota+ 
-                "\n Peso: "+ this.peso;
+        return "AVALIAÇÃO: "+ getNome()+ 
+                "\n NOTA: "+ getNota()+ 
+                "\n PESO: "+ getPeso();
     }
 }
